@@ -1,16 +1,16 @@
-# House 2/2
+# House 1/2
 
 12.11.2025 10:53:34 OK
 
-# Colors 5/5
+# Colors 2.5/5
 
 12.11.2025 10:53:59 OK
 
-# Indices 5/5
+# Indices 3.75/5
 
 12.11.2025 10:54:39 OK
 
-# Uniforms 8/8
+# Uniforms 6/8
 
 12.11.2025 10:55:21 OK
 
