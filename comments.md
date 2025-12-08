@@ -22,4 +22,17 @@
 
 12.11.202510:57:08 OK
 
+# Resize  0/8
+
+8.12.2025 10:37:57 OK
+Cztery tygodnie po terminie.
+
+# Zoom 2.5/10
+
+8.12.2025 10:41:31 OK
+Trzy tygodnie po terminie.
+
+
+
+
 
