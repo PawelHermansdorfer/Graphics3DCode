@@ -1,5 +1,9 @@
 #include "app.h"
-#include "camera.h"
+
+#include <Engine/camera.h>
+#include <Engine/camera_controller.h>
+#include <Engine/Mesh.h>
+#include <Engine/KdMaterial.h>
 
 #include <vector>
 #include "spdlog/spdlog.h"
@@ -7,19 +11,19 @@
 #include "Application/utils.h"
 #include <glm/gtc/type_ptr.hpp>
 
-void SimpleShapeApplication::init() {
+void
+SimpleShapeApplication::init()
+{
+    set_camera(new xe::Camera);
+    set_controler(new xe::CameraController(camera()));
 
-    set_camera(new Camera);
-
-    auto program = xe::utils::create_program({
-        {GL_VERTEX_SHADER,   std::string(PROJECT_DIR) + "/shaders/base_vs.glsl"},
-        {GL_FRAGMENT_SHADER, std::string(PROJECT_DIR) + "/shaders/base_fs.glsl"}
-    });
-
-    if (!program) {
-        SPDLOG_CRITICAL("Invalid program");
-        exit(-1);
-    }
+    xe::KdMaterial::init();
+    auto kd_white_material  = new xe::KdMaterial(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 1);
+    auto kd_grey_material   = new xe::KdMaterial(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f), 0);
+    auto kd_red_material    = new xe::KdMaterial(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), 0);
+    auto kd_green_material  = new xe::KdMaterial(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 0);
+    auto kd_blue_material   = new xe::KdMaterial(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), 0);
+    auto kd_yellow_material = new xe::KdMaterial(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), 0);
 
     auto [w, h] = frame_buffer_size();
 
@@ -48,35 +52,28 @@ void SimpleShapeApplication::init() {
     };
 
     std::vector<GLubyte> indices = {
-        2,1,0, 3,2,0,
+        2,1,0,
+        3,2,0,
         4,5,6,
         7,8,9,
         10,11,12,
         13,14,15
     };
 
-    ////////////////////////////////////////
-    GLuint vbo, ibo;
-    glCreateBuffers(1, &vbo);
-    glNamedBufferData(vbo, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
+    auto pyramid = new xe::Mesh(6 * sizeof(float), vertices.size() * sizeof(float), GL_STATIC_DRAW,
+                                 indices.size() * sizeof(GLubyte), GL_UNSIGNED_BYTE, GL_STATIC_DRAW);
+    pyramid->load_vertices(0, vertices.size() * sizeof(float),  vertices.data());
+    pyramid->load_indices(0,  indices.size() * sizeof(GLubyte), indices.data());
+    pyramid->add_attribute(xe::AttributeType::COLOR_0,  3, GL_FLOAT, 3 * sizeof(GLfloat));
+    pyramid->add_attribute(xe::AttributeType::POSITION, 3, GL_FLOAT, 0);
 
-    glCreateBuffers(1, &ibo);
-    glNamedBufferData(ibo, indices.size() * sizeof(GLubyte), indices.data(), GL_STATIC_DRAW);
+    pyramid->add_submesh(0, 6, kd_grey_material);
+    pyramid->add_submesh(6, 9, kd_red_material);
+    pyramid->add_submesh(9, 12, kd_green_material);
+    pyramid->add_submesh(12, 15, kd_blue_material);
+    pyramid->add_submesh(15, 18, kd_yellow_material);
 
-    glGenVertexArrays(1, &vao_);
-    glBindVertexArray(vao_);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
-
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3*sizeof(GLfloat)));
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    add_mesh(pyramid);
 
     ////////////////////////////////////////
     camera()->look_at(glm::vec3(2.0f,1.0f,2.0f),
@@ -89,19 +86,20 @@ void SimpleShapeApplication::init() {
     M_ = glm::mat4(1.0f);
 
     glCreateBuffers(1, &u_trans_buffer_handle_);
-    glNamedBufferData(u_trans_buffer_handle_, sizeof(glm::mat4), nullptr, GL_DYNAMIC_DRAW);
+    glNamedBufferData(u_trans_buffer_handle_, sizeof(glm::mat4), 0, GL_DYNAMIC_DRAW);
 
     ////////////////////////////////////////
     glClearColor(0.81f, 0.81f, 0.8f, 1.0f);
     glViewport(0, 0, w, h);
-    glUseProgram(program);
 
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 }
 
-void SimpleShapeApplication::frame() {
 
+void
+SimpleShapeApplication::frame()
+{
     glm::mat4 P = camera()->projection();
     glm::mat4 V = camera()->view();
     glm::mat4 PVM = P * V * M_;
@@ -109,23 +107,53 @@ void SimpleShapeApplication::frame() {
     glNamedBufferSubData(u_trans_buffer_handle_, 0, sizeof(glm::mat4), &PVM[0]);
     glBindBufferBase(GL_UNIFORM_BUFFER, 1, u_trans_buffer_handle_);
 
-    glBindVertexArray(vao_);
-    glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_BYTE, 0);
-    glBindVertexArray(0);
+    for(auto m: meshes_) m->draw();
 
     glBindBufferBase(GL_UNIFORM_BUFFER, 1, 0);
 }
 
-void SimpleShapeApplication::framebuffer_resize_callback(int w, int h) {
+
+void
+SimpleShapeApplication::framebuffer_resize_callback(int w, int h)
+{
     Application::framebuffer_resize_callback(w, h);
-
     glViewport(0, 0, w, h);
-
     float aspect = (float)w / (float)h;
     camera()->set_aspect(aspect);
 }
 
-void SimpleShapeApplication::scroll_callback(double xoffset, double yoffset) {
+
+void
+SimpleShapeApplication::scroll_callback(double xoffset, double yoffset)
+{
     Application::scroll_callback(xoffset, yoffset);
     camera()->zoom(yoffset / 20.0f);
+}
+
+
+void
+SimpleShapeApplication::mouse_button_callback(int button, int action, int mods)
+{
+    Application::mouse_button_callback(button, action, mods);
+
+    if (controller_)
+    {
+        double x, y;
+        glfwGetCursorPos(window_, &x, &y);
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+            controller_->LMB_pressed(x, y);
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+            controller_->LMB_released(x, y);
+    }
+}
+
+
+void
+SimpleShapeApplication::cursor_position_callback(double x, double y)
+{
+    Application::cursor_position_callback(x, y);
+    if (controller_)
+    {
+        controller_->mouse_moved(x, y);
+    }
 }

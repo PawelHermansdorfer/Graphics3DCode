@@ -81,7 +81,7 @@ SimpleShapeApplication::init()
     M_ = glm::mat4(1.0f);
 
     glCreateBuffers(1, &u_trans_buffer_handle_);
-    glNamedBufferData(u_trans_buffer_handle_, sizeof(glm::mat4), nullptr, GL_DYNAMIC_DRAW);
+    glNamedBufferData(u_trans_buffer_handle_, sizeof(glm::mat4), 0, GL_DYNAMIC_DRAW);
 
     ////////////////////////////////////////
     glClearColor(0.81f, 0.81f, 0.8f, 1.0f);

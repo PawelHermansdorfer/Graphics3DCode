@@ -10,4 +10,3 @@
 namespace xe {
     NullMaterial* NullMaterial::null_material_ = nullptr;
 }
-

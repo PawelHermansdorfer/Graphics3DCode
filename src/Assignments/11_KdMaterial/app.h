@@ -11,7 +11,9 @@
 
 #include "Application/application.h"
 
-#include "camera.h"
+#include <Engine/camera.h>
+#include <Engine/camera_controller.h>
+#include <Engine/Mesh.h>
 
 
 class SimpleShapeApplication : public xe::Application {
@@ -26,16 +28,26 @@ class SimpleShapeApplication : public xe::Application {
 
     void framebuffer_resize_callback(int w, int h) override;
     void scroll_callback(double xoffset, double yoffset) override;
+    void mouse_button_callback(int button, int action, int mods) override;
+    void cursor_position_callback(double x, double y) override;
 
-    void set_camera(Camera *camera) { camera_ = camera; }
-    Camera *camera() const { assert(camera_); return camera_; }
+    void set_camera(xe::Camera *camera) { camera_ = camera; }
+    xe::Camera *camera() const { assert(camera_); return camera_; }
 
+
+    void set_controler(xe::CameraController *controller) { controller_ = controller; }
+
+    void add_mesh(xe::Mesh *mesh)
+    {
+        meshes_.push_back(mesh);
+    }
 
     private:
-        GLuint vao_;
+        std::vector<xe::Mesh*> meshes_;
+
         GLuint u_trans_buffer_handle_;
 
         glm::mat4 M_;
-
-        Camera *camera_;
+        xe::Camera *camera_;
+        xe::CameraController *controller_;
 };
