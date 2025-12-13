@@ -2,6 +2,7 @@
 
 #include <glm/vec4.hpp>
 #include "AbstractMaterial.h"
+#include "ObjectReader/sMesh.h"
 
 namespace xe {
     class KdMaterial : public AbstractMaterial<KdMaterial> {
@@ -15,6 +16,8 @@ namespace xe {
             void bind() const override;
 
             void unbind() const override;
+
+            static Material *create_from_mtl(const mtl_material_t &mat, std::string mtl_dir);
 
         private:
             static GLuint map_Kd_location_;
