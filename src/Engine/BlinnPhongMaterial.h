@@ -5,11 +5,11 @@
 #include "ObjectReader/sMesh.h"
 
 namespace xe {
-    class BlinnPhongMaterial  : public AbstractMaterial<BlinnPhongMaterial> {
+    class BlinnPhongMaterial : public AbstractMaterial<BlinnPhongMaterial> {
         public:
-            BlinnPhongMaterial (const glm::vec4 &Kd);
-            BlinnPhongMaterial (const glm::vec4 &Kd , int use_colors);
-            BlinnPhongMaterial (const glm::vec4 &Kd, int colors, int map);
+            BlinnPhongMaterial(const glm::vec4 &Kd);
+            BlinnPhongMaterial(const glm::vec4 &Kd , int use_colors);
+            BlinnPhongMaterial(const glm::vec4 &Kd, int colors, int map);
 
             static void init();
 
