@@ -32,7 +32,13 @@ Cztery tygodnie po terminie.
 8.12.2025 10:41:31 OK
 Trzy tygodnie po terminie.
 
+# Camera movement 7.5/15
 
+15.12.2025 10:19:59 OK
+Dwa tygodnie po terminie. 
+
+
+Reszta zadań się nie kompiluje bo bo niektóre konstruktory dla KdMaterial i BlinnPhong material mają extra kwalifikator. 
 
 
 
