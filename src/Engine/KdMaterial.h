@@ -9,7 +9,7 @@ namespace xe {
         public:
             KdMaterial(const glm::vec4 &Kd);
             KdMaterial(const glm::vec4 &Kd , int use_colors);
-            KdMaterial::KdMaterial(const glm::vec4 &Kd, int colors, int map);
+            KdMaterial(const glm::vec4 &Kd, int colors, int map);
 
             static void init();
 

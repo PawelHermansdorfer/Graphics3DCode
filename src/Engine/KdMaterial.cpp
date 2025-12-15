@@ -5,7 +5,7 @@
 #include "texture.h"
 
 namespace xe {
-     GLuint KdMaterial::map_Kd_location_ = 0;
+    GLuint KdMaterial::map_Kd_location_ = 0;
 
     KdMaterial::KdMaterial(const glm::vec4 &Kd ):                         Kd_(Kd), use_vertex_colors_(0),      texture_(0)       {}
     KdMaterial::KdMaterial(const glm::vec4 &Kd, int colors):              Kd_(Kd), use_vertex_colors_(colors), texture_(0)       {}
