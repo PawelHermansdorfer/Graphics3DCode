@@ -127,4 +127,3 @@ class Camera {
         glm::vec3 x_, y_, z_;
 };
 }
-
