@@ -31,8 +31,9 @@ SimpleShapeApplication::init()
     xe::KdMaterial::init();
 
     ////////////////////////////////////////
-    // Texture
-    auto pyramid = xe::load_mesh_from_obj("Models/blue_marble.obj", "Models");
+    // Model
+    auto pyramid = xe::load_mesh_from_obj(std::string(ROOT_DIR) + "/Models/blue_marble.obj", std::string(ROOT_DIR) + "/Models");
+
     add_mesh(pyramid);
 
     ////////////////////////////////////////

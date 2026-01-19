@@ -4,10 +4,8 @@
 #include <Engine/camera_controller.h>
 #include <Engine/Mesh.h>
 #include <Engine/KdMaterial.h>
-#include <Engine/BlinnPhongMaterial.h>
 #include <Engine/texture.h>
 #include <Engine/mesh_loader.h>
-#include <Engine/light.h>
 
 #include <vector>
 #include "spdlog/spdlog.h"
@@ -31,17 +29,24 @@ SimpleShapeApplication::init()
     ////////////////////////////////////////
     // Materials
     xe::KdMaterial::init();
-    xe::BlinnPhongMaterial::init();
 
     ////////////////////////////////////////
-    // Mesh
-    auto mesh = xe::load_mesh_from_obj(std::string(ROOT_DIR) + "/Models/square.obj", std::string(ROOT_DIR) + "/Models");
-    add_mesh(mesh);
+    // Texture
+    // NOTE(Pawel Hermansdorfer): W pliku texture.cpp do sciezki textury dodawany jest automatycznie std::string(ROOT_DIR):
+    // auto texture_file = std::string(ROOT_DIR) + "/" + name;
+
+    // Wywolanie funkcji:
+    // auto pyramid = xe::load_mesh_from_obj(std::string(ROOT_DIR) + "/Models/blue_marble.obj", std::string(ROOT_DIR) + "/Models/");
+    // powoduje blad Could not read image from file `C:/Users/PawelHermansdorfer/Desktop/Graphics3DCode/C:/Users/PawelHermansdorfer/Desktop/Graphics3DCode/Models/world.topo.200412.3x5400x2700.jpg' (texture.cpp:12)
+
+    // auto pyramid = xe::load_mesh_from_obj(std::string(ROOT_DIR) + "/Models/blue_marble.obj", "Models");
+
+    add_mesh(pyramid);
 
     ////////////////////////////////////////
-    camera()->look_at(glm::vec3(0.0f,0.0f,3.0f),
+    camera()->look_at(glm::vec3(2.0f,1.0f,2.0f),
                       glm::vec3(0.0f,0.0f,0.0f),
-                      glm::vec3(0.0f,1.0f,0.0f));
+                      glm::vec3(0.0f,0.0f,1.0f));
 
     float aspect = static_cast<float>(w) / static_cast<float>(h);
     camera()->perspective(glm::radians(45.0f), aspect, 0.1f, 20.0f);
@@ -49,19 +54,14 @@ SimpleShapeApplication::init()
     M_ = glm::mat4(1.0f);
 
     glCreateBuffers(1, &u_trans_buffer_handle_);
-    glNamedBufferData(u_trans_buffer_handle_, 2 * sizeof(glm::mat4) + 3 * sizeof(glm::vec4), 0, GL_DYNAMIC_DRAW);
-
-
-    add_light(xe::PointLight(glm::vec3(0, 0, 1), glm::vec3(1,1,1), 1.0f, 0.1f));
-    glCreateBuffers(1, &u_light_buffer_handle_);
-    glNamedBufferData(u_light_buffer_handle_, sizeof(glm::vec3) + sizeof(int) + xe::MAX_POINT_LIGHTS * sizeof(xe::PointLight), 0, GL_DYNAMIC_DRAW);
+    glNamedBufferData(u_trans_buffer_handle_, sizeof(glm::mat4), 0, GL_DYNAMIC_DRAW);
 
     ////////////////////////////////////////
-    glClearColor(0.81f, 0.81f, 0.81f, 1.0f);
+    glClearColor(0.81f, 0.81f, 0.8f, 1.0f);
     glViewport(0, 0, w, h);
 
+    glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
-    // glEnable(GL_CULL_FACE);
 }
 
 
@@ -71,43 +71,13 @@ SimpleShapeApplication::frame()
     glm::mat4 P = camera()->projection();
     glm::mat4 V = camera()->view();
     glm::mat4 PVM = P * V * M_;
-    glm::mat4 VM = V * M_;
 
-    auto R = glm::mat3(VM);
-    auto VM_Normal = glm::mat3(glm::cross(R[1], R[2]),
-                               glm::cross(R[2], R[0]),
-                               glm::cross(R[0], R[1]));
-
-    glNamedBufferSubData(u_trans_buffer_handle_, 0,                   sizeof(glm::mat4), &PVM[0]);
-    glNamedBufferSubData(u_trans_buffer_handle_, sizeof(glm::mat4),   sizeof(glm::mat4), &VM[0]);
-    int normal_offset = 2 * sizeof(glm::mat4);
-    for (int k = 0; k < 3; ++k)
-    {
-        glNamedBufferSubData(u_trans_buffer_handle_, normal_offset + k * sizeof(glm::vec4), sizeof(glm::vec3), &VM_Normal[k]);
-    }
+    glNamedBufferSubData(u_trans_buffer_handle_, 0, sizeof(glm::mat4), &PVM[0]);
     glBindBufferBase(GL_UNIFORM_BUFFER, 1, u_trans_buffer_handle_);
-
-
-    glm::vec3 ambient = glm::vec3(0.25f, 0.25f, 0.25f);
-    int lights_size = lights_.size();
-    glNamedBufferSubData(u_light_buffer_handle_, 0,                 sizeof(glm::vec3), &ambient[0]);
-    glNamedBufferSubData(u_light_buffer_handle_, sizeof(glm::vec3), sizeof(int),       &lights_size);
-    for (int i = 0; i < lights_size; ++i) {
-        xe::PointLight light_vs = xe::transform(lights_[i], VM);
-        glNamedBufferSubData(u_light_buffer_handle_,
-                             sizeof(glm::vec3) + sizeof(int) + i * sizeof(xe::PointLight),
-                             sizeof(xe::PointLight),
-                             &light_vs);
-    }
-
-    glBindBufferBase(GL_UNIFORM_BUFFER, 2, u_light_buffer_handle_);
-
 
     for(auto m: meshes_) m->draw();
 
-
     glBindBufferBase(GL_UNIFORM_BUFFER, 1, 0);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 2, 0);
 }
 
 
