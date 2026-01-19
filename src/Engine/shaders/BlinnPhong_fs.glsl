@@ -74,7 +74,5 @@ void main() {
 #define PI 3.1415926535897932384626433832795
 #define INV_PI (1/(PI))
         vFragColor.rgb += INV_PI * color.rgb * lights[i].color * lights[i].intensity * diffuse * attenuation;
-        // vFragColor.rgb += lights[i].color * lights[i].intensity * diffuse * attenuation;
-        // vFragColor.rgb = abs(lights[i].position);
     }
 }

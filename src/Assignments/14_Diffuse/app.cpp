@@ -52,7 +52,7 @@ SimpleShapeApplication::init()
     glNamedBufferData(u_trans_buffer_handle_, 2 * sizeof(glm::mat4) + 3 * sizeof(glm::vec4), 0, GL_DYNAMIC_DRAW);
 
 
-    add_light(xe::PointLight(glm::vec3(0, 0, 0.1f), glm::vec3(1,1,1), 1.0f, 0.1f));
+    add_light(xe::PointLight(glm::vec3(0, 0, 1.0f), glm::vec3(1,1,1), 1.0f, 0.1f));
     glCreateBuffers(1, &u_light_buffer_handle_);
     glNamedBufferData(u_light_buffer_handle_, sizeof(glm::vec3) + sizeof(int) + xe::MAX_POINT_LIGHTS * sizeof(xe::PointLight), 0, GL_DYNAMIC_DRAW);
 
