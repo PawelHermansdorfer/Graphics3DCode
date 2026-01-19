@@ -37,8 +37,19 @@ Trzy tygodnie po terminie.
 15.12.2025 10:19:59 OK
 Dwa tygodnie po terminie. 
 
+# Mesh 12/12
 
-Reszta zadań się nie kompiluje bo bo niektóre konstruktory dla KdMaterial i BlinnPhong material mają extra kwalifikator. 
+12.01.2026 10:17:35 OK 
+
+# Kd material 20/20
+
+12.01.2026 10:20:19 OK
+
+# Textures 15/15
+
+12.01.2026 10:22:03 OK
+
+
 
 
 
