@@ -12,7 +12,7 @@ namespace xe {
     BlinnPhongMaterial::BlinnPhongMaterial (const glm::vec4 &Kd, int colors, int texture): Kd_(Kd), use_vertex_colors_(colors), texture_(texture) {}
 
     void BlinnPhongMaterial::init() {
-        create_material_uniform_buffer(3*sizeof(glm::vec4) + 2*sizeof(int) + 1*sizeof(float));
+        create_material_uniform_buffer(2*sizeof(glm::vec4) +1*sizeof(glm::vec3) + 2*sizeof(int) + 1*sizeof(float));
         create_program_in_engine({{GL_VERTEX_SHADER, "BlinnPhong_vs.glsl"}, {GL_FRAGMENT_SHADER, "BlinnPhong_fs.glsl"}});
 
         map_Kd_location_ = glGetUniformLocation(program(),"map_Kd");
@@ -39,10 +39,10 @@ namespace xe {
         OGL_CALL(glBindBufferBase(GL_UNIFORM_BUFFER, 0, material_uniform_buffer()));
         OGL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::vec4), &Ka_));
         OGL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::vec4), sizeof(glm::vec4), &Kd_));
-        OGL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::vec4), sizeof(glm::vec4), &Ks_));
-        OGL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 3 * sizeof(glm::vec4), sizeof(float), &Ns_));
-        OGL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 3 * sizeof(glm::vec4) + sizeof(float), sizeof(int), &use_vertex_colors_));
-        OGL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 3 * sizeof(glm::vec4) + sizeof(float) + sizeof(int), sizeof(int), &use_map_Kd_));
+        OGL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::vec4), sizeof(glm::vec3), &Ks_));
+        OGL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::vec4) + sizeof(glm::vec3), sizeof(float), &Ns_));
+        OGL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::vec4) + sizeof(glm::vec3) + sizeof(float), sizeof(int), &use_vertex_colors_));
+        OGL_CALL(glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::vec4) + sizeof(glm::vec3) + sizeof(float) + sizeof(int), sizeof(int), &use_map_Kd_));
     }
 
 
@@ -70,7 +70,7 @@ namespace xe {
         material->Ka_[1] = mat.ambient[1];
         material->Ka_[2] = mat.ambient[2];
 
-        material->Ks_ = glm::vec4(mat.specular[0], mat.specular[1], mat.specular[2], 1.0f);
+        material->Ks_ = glm::vec3(mat.specular[0], mat.specular[1], mat.specular[2]);
         material->Ns_ = mat.shininess;
 
         return material;

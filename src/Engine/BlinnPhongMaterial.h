@@ -28,7 +28,7 @@ namespace xe {
             glm::vec4 Ka_;
             int use_vertex_colors_;
 
-            glm::vec4 Ks_;
+            glm::vec3 Ks_;
             float Ns_;
     };
 }

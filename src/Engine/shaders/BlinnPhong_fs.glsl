@@ -12,7 +12,7 @@ uniform sampler2D map_Kd;
 layout(std140, binding=0) uniform Material {
     vec4 Ka;
     vec4 Kd;
-    vec4 Ks;
+    vec3 Ks;
     float Ns;
     bool use_vertex_color; 
     bool use_map_Kd;
@@ -77,7 +77,7 @@ void main() {
         float attenuation = 1.0 / (r * r);
 
         vec3 diffuse_color = INV_PI * color.rgb * lights[i].color * lights[i].intensity * diffuse * attenuation;
-        vec3 specular_color = Ks.xyz * lights[i].color * lights[i].intensity * specular * attenuation;
+        vec3 specular_color = Ks * lights[i].color * lights[i].intensity * specular * attenuation;
         vFragColor.rgb += diffuse_color + specular_color;
     }
 }
