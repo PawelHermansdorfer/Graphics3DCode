@@ -49,7 +49,13 @@ Dwa tygodnie po terminie.
 
 12.01.2026 10:22:03 OK
 
+# OBJ reader 5/5 
 
+19.01.2026 12:42:11 OK
+
+# Diffuse 25/25
+
+22.01.2026 10:23:29 OK
 
 
 
