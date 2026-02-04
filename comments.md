@@ -57,5 +57,10 @@ Dwa tygodnie po terminie.
 
 22.01.2026 10:23:29 OK
 
+# Specular 0/12
+
+4.02.2026 11:30:36
+Człon specular jest źle znormalizowany, brakuje czynnika (Ns+8)/(8pi). 
+
 
 
