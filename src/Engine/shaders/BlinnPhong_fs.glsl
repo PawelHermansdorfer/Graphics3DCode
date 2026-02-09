@@ -72,12 +72,14 @@ void main() {
         float diffuse = max(dot(normal, light_dir), 0.0);
 
         float specular = pow(max(dot(normal, half_dir), 0.0), Ns);
+        float spec_norm = (Ns + 8.0) / (8.0 * PI);
 
         float r = max(lights[i].radius, light_distance);
         float attenuation = 1.0 / (r * r);
 
         vec3 diffuse_color = INV_PI * color.rgb * lights[i].color * lights[i].intensity * diffuse * attenuation;
-        vec3 specular_color = Ks * lights[i].color * lights[i].intensity * specular * attenuation;
+        vec3 specular_color = spec_norm * Ks * lights[i].color * lights[i].intensity * specular * attenuation;
+
         vFragColor.rgb += diffuse_color + specular_color;
     }
 }
